@@ -1,7 +1,6 @@
 library(dplyr)
 library(e1071)
 library(randomForest)
-library(class)
 library(proxy)
 library(mltools) 
 
