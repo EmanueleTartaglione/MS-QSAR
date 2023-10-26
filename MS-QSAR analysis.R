@@ -7,6 +7,8 @@ library(mltools)
 library(readr)
 library(ISLR2)
 library(class)
+library(caret)
+library(ggplot2)
 
 msqsar_cl <- function(x, y, p = 0.8, 
                       min_size = 3, max_size = 7, max_dist = 1, seed = 1,
@@ -569,7 +571,6 @@ MSE
 
 
 ## KNN ----
-library(class)
 best_k = 3
 set.seed(1)
 
@@ -644,10 +645,8 @@ MSE
 
 
 ## KNN ----
-library(class)
 best_k = 3
 set.seed(1)
-library(caret)
 
 knn_model <- train(medv ~ ., data = traindf, method = "knn", tuneGrid = data.frame(k = best_k))
 preds <- predict(knn_model, testdf)
@@ -722,10 +721,8 @@ MSE <- mean((preds - testdf$area)^2)
 MSE 
 
 ## KNN ----
-library(class)
 best_k = 3
 set.seed(1)
-library(caret)
 
 knn_model <- train(area ~ ., data = traindf, method = "knn", tuneGrid = data.frame(k = best_k))
 preds <- predict(knn_model, testdf)
@@ -777,8 +774,6 @@ elapsed_time <- c(0.027, 0.051, 0.083)
 # Create a data frame
 data <- data.frame(Observations = observations, User = user_time, System = system_time, Elapsed = elapsed_time)
 
-# Load the ggplot2 library
-library(ggplot2)
 
 # Create a line chart using ggplot2
 ggplot(data, aes(x = Observations)) +
@@ -792,59 +787,6 @@ ggplot(data, aes(x = Observations)) +
   scale_color_manual(values = c("User" = "red", "System" = "blue", "Elapsed" = "green")) +
   theme_minimal() +
   theme(legend.title = element_blank())
-
-## PROVE
-
-
-# Create training matrix and test matrix
-train_dist_matrix <- as.matrix(dist(x.train))
-test_dist_matrix <- as.data.frame.matrix(dist(x.train, x.test))
-
-# Calculate the mean distance
-mean_dist <- mean(train_dist_matrix)
-
-
-# Creating a data frame with distances and original indices
-distance_matrix <- data.frame(distances = test_dist_matrix[, 11], 
-                              original_index = rownames(test_dist_matrix))
-
-max_size = 3
-# Calculating the number of elements to keep within the specified range
-num_elements_to_keep <- min(max_size, nrow(distance_matrix))
-
-unique_species <- unique(y[as.integer(filtered_df$original_index)])
-length(unique_species)
-
-# Keep the smallest elements within the range
-# and filter the selected observations based on max_dist
-max_dist = 1
-filtered_df <- distance_matrix %>%
-  top_n(-num_elements_to_keep, wt = distances) %>%
-  arrange(distances) %>%
-  slice_head(n = num_elements_to_keep) %>%
-  filter(distances <= max_dist*mean_dist)
-
-
-indices <- as.integer(filtered_df$original_index)
-
-# Create the test matrix
-test_matrix <- data.frame(
-  y.test[11], 
-  data.frame(
-    t(test_dist_matrix[rownames(test_dist_matrix) %in% indices, ]))[11,])
-
-# Create the train matrix
-train_matrix <- data.frame(
-  y[indices], 
-  train_dist_matrix[rownames(train_dist_matrix) %in% indices, 
-                    colnames(train_dist_matrix) %in% indices])
-colnames(train_matrix)[1] <- "y.train"
-
-s <- as.character(train_matrix$y.train)
-length(unique(s))
-
-y.train <- factor(train_matrix$y.train)
-model <- randomForest(y.train ~ ., train_matrix)
 
 
 
