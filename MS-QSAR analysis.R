@@ -7,6 +7,7 @@ library(mltools)
 
 library(readr)
 library(ISLR2)
+library(class)
 
 msqsar_cl <- function(x, y, p = 0.8, 
                       min_size = 3, max_size = 7, max_dist = 1, seed = 1,
