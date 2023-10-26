@@ -1,3 +1,8 @@
+library(dplyr)
+library(e1071)
+library(randomForest)
+library(proxy)
+library(mltools) 
 
 msqsar_cl <- function(x, y, p = 0.8, 
                       min_size = 3, max_size = 7, max_dist = 1, seed = 1,
